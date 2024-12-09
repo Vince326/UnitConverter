@@ -1,5 +1,6 @@
 package com.vhunter.unitconverter
 
+import android.graphics.Paint.Style
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -32,9 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vhunter.unitconverter.ui.theme.UnitConverterTheme
 import kotlin.math.roundToInt
 
@@ -67,10 +72,16 @@ fun UnitConverter() {
     val conversionFactor = remember { mutableStateOf(1.00) }
     val oConversionFactor = remember { mutableStateOf(1.00) }
 
+    val customTextStyle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontSize = 20.sp,
+        color = Color.Red
+    )
+
     fun convertUnit() {
         //Elvis operator
         val inputValueDouble = inputValue.toDoubleOrNull() ?: 0.0
-        val result = (inputValueDouble * conversionFactor.value * 100 / oConversionFactor.value).roundToInt() / 100.0
+        val result = (inputValueDouble * conversionFactor.value * 100.0 / oConversionFactor.value).roundToInt() / 100.0
         outputValue = result.toString()
     }
 
@@ -81,9 +92,10 @@ fun UnitConverter() {
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         //Here, all the UI Units will be stacked on top of each other
-            Text("Unit Converter")
+            Text("Unit Converter", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = inputValue, onValueChange = {
+        OutlinedTextField(value = inputValue,
+            onValueChange = {
             inputValue = it
             convertUnit()
         /*Here goes what should happen when the value of outlined text field changes*/
@@ -95,12 +107,12 @@ fun UnitConverter() {
             Box {
                 //Input Button
                 Button(onClick ={iExpanded = true} ) {
-                    Text(text = inputValue)
+                    Text(text = inputUnit)
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Arrow Down")
                 }
 
                 //Controls the Dropdown Menu and the different Units
-                DropdownMenu(expanded = false, onDismissRequest = {iExpanded = false} ) {
+                DropdownMenu(expanded = iExpanded, onDismissRequest = {iExpanded = false} ) {
                     DropdownMenuItem(
                         text = {Text("Centimeters") },
                         onClick = {
@@ -108,7 +120,8 @@ fun UnitConverter() {
                             inputUnit = "Centimeters"
                             conversionFactor.value = 0.01
                             convertUnit()
-                        })
+                        }
+                    )
 
                     DropdownMenuItem(
                         text = {Text("Meters") },
@@ -117,7 +130,8 @@ fun UnitConverter() {
                             inputUnit = "Meters"
                             conversionFactor.value = 1.0
                             convertUnit()
-                        })
+                        }
+                    )
 
                     DropdownMenuItem(
                         text = {Text("Millimeters") },
@@ -126,7 +140,8 @@ fun UnitConverter() {
                             inputUnit = "Millimeters"
                             conversionFactor.value = 0.001
                             convertUnit()
-                        })
+                        }
+                    )
 
                     DropdownMenuItem(
                         text = {Text("Feet") },
@@ -135,7 +150,8 @@ fun UnitConverter() {
                             inputUnit = "Feet"
                             conversionFactor.value = 0.3048
                             convertUnit()
-                        })
+                        }
+                    )
                 }
 
             }
@@ -144,11 +160,11 @@ fun UnitConverter() {
             Box {
                 //Output Button
                 Button(onClick = {oExpanded = true}) {
-                    Text(text = outputValue)
+                    Text(text = outputUnit)
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Arrow Down")
                 }
 
-                //Controls the Dropdown Menu and the different Units
+                //Controls the Right Dropdown Menu and the different Units
                 DropdownMenu(expanded = oExpanded, onDismissRequest = {oExpanded = false} ) {
                     DropdownMenuItem(
                         text = {Text("Centimeters") },
@@ -183,14 +199,18 @@ fun UnitConverter() {
                             oExpanded = false
                             outputUnit = "Feet"
                             oConversionFactor.value = 0.3048
-                            convertUnit()})
+                            convertUnit()
+                        })
                 }
             }
 
-            //Here, all the units will be stacked nex to each other
+            //Here, all the units will be stacked next to each other
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Result: ")
+        //Result Text
+        Text("Result: $outputValue $outputUnit",
+            style = MaterialTheme.typography.headlineMedium
+            )
     }
 }
 
